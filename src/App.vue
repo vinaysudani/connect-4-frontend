@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="col-12 mt-2 text-center">
-                <div  class="board-box" :style="{ 'background': turn }"></div>
+                <div class="board-box" :style="{ 'background': turn }"></div>
             </div>
         </div>
     </div>
@@ -26,10 +26,12 @@ export default {
     name: 'App',
     data: function() {
         return {
-            board : [],
+            board : null,
             turn : null,
             board_rows : 6,
-            board_colls: 7
+            board_colls: 7,
+            gameFinished: false,
+            winner: null,
         }
     },
     created: function() {
@@ -38,18 +40,23 @@ export default {
     },
     methods: {
         initializeBoard() {
+            let board = [];
             for(let i=0; i < this.board_rows; i++) {
                 let temp = [];
                 for(let j=0; j < this.board_colls; j++) {
                     temp.push(0)
                 }
-                this.board.push(temp)
+                board.push(temp)
             }
+            this.board = board
         },
         boxClicked(column) {
-            if (this.isColumnFillable(column)) {
+            if (this.isColumnFillable(column) && !this.gameFinished) {
                 this.fillColumn(column)
-                this.toggleTurn()
+                this.checkForWinner()
+                if (!this.gameFinished) {
+                    this.toggleTurn()
+                }
             }
         },
         toggleTurn() {
@@ -62,13 +69,41 @@ export default {
         fillColumn(column) {
             for(let row = this.board_rows -1; row >=0; row--) {
                 if (this.board[row][column] == "") {
-                    this.board[row][column] = this.turn
+                    // can not assign value directly like this this.board[row][column] = this.turn
+                    // otherwise vue will not detect changes on board and not updated dom
+                    this.board[row].splice(column, 1, this.turn) 
                     break
                 }
             }
         },
         isColumnFillable(column) {
             return this.board[0][column] == "" ? true : false
+        },
+        checkForWinner() {
+            
+            console.log('check for winner')
+            
+            // Horizonal
+            for(let row = this.board_rows -1; row >=0 && !this.gameFinished; row--) {
+                let count = 0;
+                for (let column = 0; column < this.board_colls; column++) {
+                    if (this.board[row][column] == this.turn) {
+                       count++
+                    } else {
+                        count = 0
+                    }
+                    if (count == 4) {
+                        this.gameFinished = true;
+                        this.winner =  this.turn;
+                        break  
+                    }
+                }
+            }
+           
+            // Vertial
+            // Diagonal
+                // One dir
+                // Another dir
         }
     }
 }
