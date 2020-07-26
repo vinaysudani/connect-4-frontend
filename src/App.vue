@@ -1,24 +1,31 @@
 <template>
-  <div>
-    <b-navbar toggleable="lg" type="dark" variant="primary">
-        <b-navbar-brand href="#">Connect 4</b-navbar-brand>
-    </b-navbar>
-    <div class="container">
-        <div class="row">
-            <div class="col-12 mt-2">
-                <div v-for="(row, i) of board" :key="i" class="board-row">
-                    <div class="board-box" v-for="(box, i) of row" :key="i"
-                        @click="boxClicked(i)"
-                        :style="{ 'background': box }"
+    <div>
+        <b-navbar toggleable="lg" type="dark" variant="primary">
+            <b-navbar-brand href="#">Connect 4</b-navbar-brand>
+        </b-navbar>
+        <div class="container">
+            <div class="row">
+                <div class="col-12 mt-2">
+                    <div v-for="(row, i) of board" :key="i" class="board-row">
+                        <div class="board-box" v-for="(box, j) of row" :key="j"
+                            @click="boxClicked(j)"
+                            :class="{ 
+                                'box-winning': winningBoxes.includes(boxKey(i, j)),
+                                'box-red': box == 'red',
+                                'box-blue': box == 'blue'
+                            }"
                         ></div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 mt-2 text-center">
-                <div class="board-box" :style="{ 'background': turn }"></div>
+                <div class="col-12 mt-2 text-center">
+                    <div class="board-box" :style="{ 'background': turn }"></div>
+                    <div v-if="!gameFinished && turn">Turn of {{ capitalize(turn) }}</div>
+                    <div v-if="gameFinished && winner">{{ capitalize(winner) }} won the game</div>
+                    <div v-if="gameFinished && !winner">Game Draw</div>
+                </div>
             </div>
         </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -32,6 +39,7 @@ export default {
             board_colls: 7,
             gameFinished: false,
             winner: null,
+            winningBoxes: []
         }
     },
     created: function() {
@@ -85,15 +93,16 @@ export default {
             
             // Horizonal
             for(let row = this.board_rows -1; row >=0 && !this.gameFinished; row--) {
-                let count = 0;
+                let winningBoxes = [];
                 for (let column = 0; column < this.board_colls; column++) {
                     if (this.board[row][column] == this.turn) {
-                       count++
+                       winningBoxes.push(this.boxKey(row, column))
                     } else {
-                        count = 0
+                        winningBoxes = [];
                     }
-                    if (count == 4) {
+                    if (winningBoxes.length == 4) {
                         this.gameFinished = true;
+                        this.winningBoxes = winningBoxes;
                         this.winner =  this.turn;
                         break  
                     }
@@ -104,6 +113,15 @@ export default {
             // Diagonal
                 // One dir
                 // Another dir
+        },
+        capitalize(s){
+            if (typeof s !== 'string') {
+                return ''
+            }
+            return s.charAt(0).toUpperCase() + s.slice(1)
+        },
+        boxKey(row, column) {
+            return row+'-'+column
         }
     }
 }
@@ -121,5 +139,19 @@ export default {
         display: inline-block;
         margin: 5px;
         border-radius: 100%;
+    }
+    .board-box.box-red {
+        background: red;
+    }
+    .board-box.box-blue {
+        background: blue;
+    }
+    .board-box.box-red.box-winning {
+        background: yellow;
+        border: 3px solid red;
+    }
+    .board-box.box-blue.box-winning {
+        background: yellow;
+        border: 3px solid blue;
     }
 </style>
