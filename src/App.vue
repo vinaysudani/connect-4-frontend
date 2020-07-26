@@ -127,9 +127,6 @@ export default {
                     }
                 }
             }
-            // Diagonal
-                // One dir
-                // Another dir
         },
         capitalize(s){
             if (typeof s !== 'string') {
@@ -172,12 +169,7 @@ export default {
     .board-box.box-blue {
         background: blue;
     }
-    .board-box.box-red.box-winning {
-        background: yellow;
-        border: 3px solid red;
-    }
-    .board-box.box-blue.box-winning {
-        background: yellow;
-        border: 3px solid blue;
+    .board-box.box-winning {
+        border: 3.5px solid yellow;
     }
 </style>
