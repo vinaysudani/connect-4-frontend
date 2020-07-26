@@ -43,7 +43,8 @@ export default {
             board_cols: 7,
             gameFinished: false,
             winner: null,
-            winningBoxes: []
+            winningBoxes: [],
+            winingBoxesTemp: []
         }
     },
     created: function() {
@@ -94,38 +95,33 @@ export default {
         checkForWinner() {
             // Horizonal
             for(let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--) {
-                let winningBoxes = [];
-                for (let column = 0; column < this.board_cols; column++) {
-                    if (this.board[row][column] == this.turn) {
-                       winningBoxes.push(this.boxKey(row, column))
-                    } else {
-                        winningBoxes = [];
-                    }
-                    if (winningBoxes.length == 4) {
-                        this.gameFinished = true;
-                        this.winningBoxes = winningBoxes;
-                        this.winner =  this.turn;
-                        break  
-                    }
+                this.clearBoxChecking();
+                for (let column = 0; column < this.board_cols && !this.gameFinished; column++) {
+                    this.checkNextBox(row, column)
                 }
             }
             // Vertial
             for(let column = 0; column < this.board_cols && !this.gameFinished; column++)
             {
-                let winningBoxes = [];
-                for (let row = this.board_rows - 1; row >=0 ; row--) {
-                    if (this.board[row][column] == this.turn) {
-                       winningBoxes.push(this.boxKey(row, column))
-                    } else {
-                        winningBoxes = [];
-                    }
-                    if (winningBoxes.length == 4) {
-                        this.gameFinished = true;
-                        this.winningBoxes = winningBoxes;
-                        this.winner =  this.turn;
-                        break  
-                    }
+                this.clearBoxChecking();
+                for (let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--) {
+                   this.checkNextBox(row, column)
                 }
+            }
+        },
+        clearBoxChecking(){
+            this.winingBoxesTemp = [];
+        },
+        checkNextBox(row, column){
+            if (this.board[row][column] == this.turn) {
+                this.winingBoxesTemp.push(this.boxKey(row, column))
+            } else {
+                this.clearBoxChecking()
+            }
+            if (this.winingBoxesTemp.length == 4) {
+                this.gameFinished = true;
+                this.winningBoxes = this.winingBoxesTemp;
+                this.winner =  this.turn;  
             }
         },
         capitalize(s){
