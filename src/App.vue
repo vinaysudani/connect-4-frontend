@@ -5,6 +5,16 @@
         </b-navbar>
         <div class="container">
             <div class="row">
+                <div class="col-12 mt-2 text-center">
+                    <div>
+                        <div v-if="!gameFinished && turn">Turn of {{ capitalize(turn) }}</div>
+                        <div v-if="gameFinished && winner">{{ capitalize(winner) }} won the game</div>
+                        <div v-if="gameFinished && !winner">Game draw</div>
+                        <div v-if="gameFinished">
+                            <button class="btn btn-primary" @click="restartGame">Restart Game</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-12 mt-2">
                     <div v-for="(row, i) of board" :key="i" class="board-row">
                         <div class="board-box" v-for="(box, j) of row" :key="j"
@@ -16,12 +26,6 @@
                             }"
                         ></div>
                     </div>
-                </div>
-                <div class="col-12 mt-2 text-center">
-                    <div class="board-box" :style="{ 'background': turn }"></div>
-                    <div v-if="!gameFinished && turn">Turn of {{ capitalize(turn) }}</div>
-                    <div v-if="gameFinished && winner">{{ capitalize(winner) }} won the game</div>
-                    <div v-if="gameFinished && !winner">Game Draw</div>
                 </div>
             </div>
         </div>
@@ -36,7 +40,7 @@ export default {
             board : null,
             turn : null,
             board_rows : 6,
-            board_colls: 7,
+            board_cols: 7,
             gameFinished: false,
             winner: null,
             winningBoxes: []
@@ -51,7 +55,7 @@ export default {
             let board = [];
             for(let i=0; i < this.board_rows; i++) {
                 let temp = [];
-                for(let j=0; j < this.board_colls; j++) {
+                for(let j=0; j < this.board_cols; j++) {
                     temp.push(0)
                 }
                 board.push(temp)
@@ -88,13 +92,10 @@ export default {
             return this.board[0][column] == "" ? true : false
         },
         checkForWinner() {
-            
-            console.log('check for winner')
-            
             // Horizonal
-            for(let row = this.board_rows -1; row >=0 && !this.gameFinished; row--) {
+            for(let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--) {
                 let winningBoxes = [];
-                for (let column = 0; column < this.board_colls; column++) {
+                for (let column = 0; column < this.board_cols; column++) {
                     if (this.board[row][column] == this.turn) {
                        winningBoxes.push(this.boxKey(row, column))
                     } else {
@@ -108,8 +109,24 @@ export default {
                     }
                 }
             }
-           
             // Vertial
+            for(let column = 0; column < this.board_cols && !this.gameFinished; column++)
+            {
+                let winningBoxes = [];
+                for (let row = this.board_rows - 1; row >=0 ; row--) {
+                    if (this.board[row][column] == this.turn) {
+                       winningBoxes.push(this.boxKey(row, column))
+                    } else {
+                        winningBoxes = [];
+                    }
+                    if (winningBoxes.length == 4) {
+                        this.gameFinished = true;
+                        this.winningBoxes = winningBoxes;
+                        this.winner =  this.turn;
+                        break  
+                    }
+                }
+            }
             // Diagonal
                 // One dir
                 // Another dir
@@ -122,6 +139,15 @@ export default {
         },
         boxKey(row, column) {
             return row+'-'+column
+        },
+        restartGame() {
+            this.board = null,
+            this.turn = null,
+            this.gameFinished = false,
+            this.winner = null,
+            this. winningBoxes = []
+            this.initializeBoard()
+            this.toggleTurn()
         }
     }
 }
