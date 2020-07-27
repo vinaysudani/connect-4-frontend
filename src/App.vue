@@ -94,9 +94,11 @@ export default {
         },
         checkForWinner() {
             // Horizonal
-            for(let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--) {
+            for(let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--)
+            {
                 this.clearBoxChecking();
-                for (let column = 0; column < this.board_cols && !this.gameFinished; column++) {
+                for (let column = 0; column < this.board_cols && !this.gameFinished; column++)
+                {
                     this.checkNextBox(row, column)
                 }
             }
@@ -104,8 +106,55 @@ export default {
             for(let column = 0; column < this.board_cols && !this.gameFinished; column++)
             {
                 this.clearBoxChecking();
-                for (let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--) {
+                for (let row = this.board_rows - 1; row >=0 && !this.gameFinished; row--)
+                {
                    this.checkNextBox(row, column)
+                }
+            }
+            // Diagonal (Direction from board bottom-left to board top-right)
+            var start_points = [];
+            for(let row = 0; row < this.board_rows; row++)
+            {
+                start_points.push({ row: row, column: 0 })
+            }
+            for(let column = 1; column < this.board_cols; column++)
+            {
+                start_points.push({ row: this.board_rows - 1, column: column })
+            }
+            for(let i = 0; i < start_points.length && !this.gameFinished; i++)
+            {
+                let row = start_points[i].row;
+                let column = start_points[i].column;
+                this.clearBoxChecking();
+                this.checkNextBox(row, column)
+                while(row > 0 && column < this.board_cols - 1 && !this.gameFinished)
+                {
+                    row--;
+                    column++;
+                    this.checkNextBox(row, column)
+                }
+            }
+            // Diagonal (Direction from board top-left to board bottom-right)
+            start_points = [];
+            for(let row = this.board_rows - 1; row >= 0; row--)
+            {
+                start_points.push({ row: row, column: 0 })
+            }
+            for(let column = 1; column < this.board_cols; column++)
+            {
+                start_points.push({ row: 0, column: column })
+            }
+            for(let i = 0; i < start_points.length && !this.gameFinished; i++)
+            {
+                let row = start_points[i].row;
+                let column = start_points[i].column;
+                this.clearBoxChecking();
+                this.checkNextBox(row, column)
+                while(row < this.board_rows - 1 && column < this.board_cols - 1 && !this.gameFinished)
+                {
+                    row++;
+                    column++;
+                    this.checkNextBox(row, column)
                 }
             }
         },
