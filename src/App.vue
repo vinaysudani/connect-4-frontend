@@ -68,6 +68,9 @@ export default {
                 this.fillColumn(column)
                 this.checkForWinner()
                 if (!this.gameFinished) {
+                    this.checkForGameOver()
+                }
+                if (!this.gameFinished) {
                     this.toggleTurn()
                 }
             }
@@ -171,6 +174,19 @@ export default {
                 this.gameFinished = true;
                 this.winningBoxes = this.winingBoxesTemp;
                 this.winner =  this.turn;  
+            }
+        },
+        checkForGameOver() {
+            let emptyBoxExists = false
+            this.board.forEach(rows => {
+                rows.forEach(boadBox => {
+                    if (boadBox == ""){
+                        emptyBoxExists = true
+                    }
+                })
+            })
+            if (!emptyBoxExists) {
+                this.gameFinished = true
             }
         },
         capitalize(s){
