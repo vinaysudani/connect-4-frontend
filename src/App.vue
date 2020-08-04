@@ -3,16 +3,16 @@
         <b-navbar toggleable="lg" type="dark" variant="primary">
             <b-navbar-brand href="#">Connect 4</b-navbar-brand>
         </b-navbar>
-        <app-play-local></app-play-local>
+        <app-game-board></app-game-board>
     </div>
 </template>
 
 <script>
-import PlayLocal from './components/PlayLocal.vue'
+import GameBoard from './components/GameBoard.vue'
 
 export default {
     components: {
-        'app-play-local': PlayLocal
+        'app-game-board': GameBoard
     }
 }
 </script>
